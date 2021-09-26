@@ -1,13 +1,12 @@
-import axios from 'axios';
-import { load } from 'cheerio';
 import { getChapterId, getMetaProperty } from './helpers';
 import { LatestChapterInfo, Novel } from './model';
+import { load } from './wrapper';
 
 export async function parseNovelPage(slug: string) {
   const url = `https://freewebnovel.com/${slug}.html`;
   try {
-    const response = await axios.get(url);
-    const $ = load(response.data);
+    const $ = await load(url);
+
     const title = getTitle($);
     const rating = parseFloat(getRating($));
     const description = getDescription($);
@@ -107,26 +106,23 @@ async function getLatestUpdate($: cheerio.Root) {
   const url = getMetaProperty($, 'og:novel:lastest_chapter_url');
   const title = getMetaProperty($, 'og:novel:lastest_chapter_name');
   const chapterId = getChapterId(url);
-  try {
-    const response = await axios.get(url);
-    const $$ = load(response.data);
-    const teaserText = $$('div.m-read div.txt')
-      .children('p')
-      .slice(0, 4)
-      .map((_index, elem) => {
-        if ($(elem).children('strong').length) return '';
 
-        return $(elem).text();
-      })
-      .get()
-      .join('\n');
-    return {
-      title,
-      chapterId,
-      datePosted: new Date().toISOString(),
-      teaserText,
-    } as LatestChapterInfo;
-  } catch (error) {
-    throw error;
-  }
+  const $$ = await load(url);
+  const teaserText = $$('div.m-read div.txt')
+    .children('p')
+    .slice(0, 4)
+    .map((_index, elem) => {
+      if ($(elem).children('strong').length) return '';
+
+      return $(elem).text();
+    })
+    .get()
+    .join('\n');
+
+  return {
+    title,
+    chapterId,
+    datePosted: new Date().toISOString(),
+    teaserText,
+  } as LatestChapterInfo;
 }

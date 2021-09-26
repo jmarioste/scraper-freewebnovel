@@ -1,11 +1,9 @@
-import axios from 'axios';
-import { load } from 'cheerio';
+import { load } from './wrapper';
 import { getChapterId } from './helpers';
 import { ChapterInfo } from './model';
 
 async function getPageUrls(slug: string) {
-  const { data } = await axios.get(`https://freewebnovel.com/${slug}.html`);
-  const $ = load(data);
+  const $ = await load(`https://freewebnovel.com/${slug}.html`);
   const pages = $('#indexselect').children().length;
   let arr = Array.from({ length: pages }, (_, i) => i + 1);
 
@@ -33,9 +31,7 @@ export async function getChapterList(slug: string) {
  * Returns all the chapters for a given page url
  */
 export async function parseChapterList(url: string): Promise<ChapterInfo[]> {
-  console.log(url);
-  const { data } = await axios.get(url);
-  const $ = load(data);
+  const $ = await load(url);
 
   const chapters = $('div.m-newest2 ul.ul-list5 li a')
     .map((_, elem) => {
