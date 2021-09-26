@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { load } from 'cheerio';
+import { getMetaProperty } from './helpers';
 import { LatestChapterInfo, Novel } from './model';
 
 export function getChapterId(url: string) {
@@ -42,9 +43,7 @@ async function parseNovelPage(slug: string) {
 }
 
 function getTitle($: cheerio.Root) {
-  return $('h1.tit')
-    .text()
-    .replace(/\n/g, '');
+  return getMetaProperty($, 'og:title');
 }
 function getRating($: cheerio.Root) {
   const text = $('div.score p.vote')
@@ -78,65 +77,43 @@ function getAlternativeTitles($: cheerio.Root) {
 }
 
 function getAuthor($: cheerio.Root) {
-  const containerElem = $("span[title='Author']").next();
-  const author = $(containerElem)
-    .children('a')
-    .map((_index, elem) => {
-      return $(elem).text();
-    })
-    .get();
+  const author = getMetaProperty($, 'og:novel:author')
+    ?.split(',')
+    .map(genre => genre.trim());
 
   return author;
 }
 
 function getGenres($: cheerio.Root) {
-  const containerElem = $("span[title='Genre']").next();
-  const genre: string[] = $(containerElem)
-    .children('a')
-    .map((_index, elem) => {
-      return $(elem).text();
-    })
-    .get();
+  const genre = getMetaProperty($, 'og:novel:genre')
+    ?.split(',')
+    .map(genre => genre.trim());
 
   return genre;
 }
 
 function getType($: cheerio.Root) {
-  const type = $("span[title='Original Language']")
-    .next()
-    .text()
-    .replace(/\n/g, '');
+  const type = getMetaProperty($, 'og:novel:category');
 
   return type;
 }
 
 function getStatus($: cheerio.Root) {
-  const type = $("span[title='Status']")
-    .next()
-    .text()
-    .replace(/\n/g, '');
+  const type = getMetaProperty($, 'og:novel:status');
 
   return type;
 }
 function getImageUrl($: cheerio.Root) {
-  const imgUrl = $('div.pic img').attr('src');
+  const imgUrl = getMetaProperty($, 'og:image');
   return imgUrl;
 }
 
 async function getLatestUpdate($: cheerio.Root) {
-  const latest = $('div.m-newest1 ul.ul-list5')
-    .children()
-    .first();
-  const url =
-    $(latest)
-      .find('a')
-      .attr('href') ?? '';
-  const title = $(latest)
-    .find('a')
-    .text();
+  const url = getMetaProperty($, 'og:novel:lastest_chapter_url');
+  const title = getMetaProperty($, 'og:novel:lastest_chapter_name');
   const chapterId = getChapterId(url);
   try {
-    const response = await axios.get(`https://freewebnovel.com${url}`);
+    const response = await axios.get(url);
     const $$ = load(response.data);
     const teaserText = $$('div.m-read div.txt')
       .children('p')

@@ -50,6 +50,7 @@
     "tsdx": "^0.14.1"
   },
   "devDependencies": {
-    "@types/cheerio": "^0.22.30"
+    "@types/cheerio": "^0.22.30",
+    "axios-mock-adapter": "^1.20.0"
   }
 }
