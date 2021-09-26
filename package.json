@@ -43,5 +43,13 @@
       "path": "dist/scraper-freewebnovel.esm.js",
       "limit": "10 KB"
     }
-  ]
+  ],
+  "dependencies": {
+    "axios": "^0.21.4",
+    "cheerio": "^1.0.0-rc.10",
+    "tsdx": "^0.14.1"
+  },
+  "devDependencies": {
+    "@types/cheerio": "^0.22.30"
+  }
 }
