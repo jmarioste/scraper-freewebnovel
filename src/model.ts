@@ -1,9 +1,12 @@
-export type LatestChapterInfo = {
+export type ChapterInfo = {
   title: string;
   datePosted: string;
   chapterId: number;
-  teaserText?: string;
 };
+
+export type LatestChapterInfo = {
+  teaserText?: string;
+} & ChapterInfo;
 
 export type Novel = {
   id: string;
