@@ -32,8 +32,9 @@
     "trailingComma": "es5"
   },
   "name": "scraper-freewebnovel",
-  "author": "Jasser Mark Arioste",
+  "author": "jmarioste",
   "module": "dist/scraper-freewebnovel.esm.js",
+  "description": "A simple webscraper for freewebnovel",
   "size-limit": [
     {
       "path": "dist/scraper-freewebnovel.cjs.production.min.js",
