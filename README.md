@@ -51,3 +51,5 @@ Example:
   const url = "https://freewebnovel.com/monarch-of-time/chapter-100.html";
   const chapterId = scraper.getChapterId(url); //100
 ```
+
+Used by [novelfury.com](https://novelfury.com) 
